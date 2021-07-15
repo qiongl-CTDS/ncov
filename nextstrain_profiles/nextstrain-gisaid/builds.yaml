@@ -12,8 +12,6 @@ S3_DST_BUCKET: "nextstrain-ncov-private"
 S3_DST_COMPRESSION: "xz"
 S3_DST_ORIGINS: ["gisaid"]
 
-genes: ["E", "M", "N", "ORF10", "ORF14", "ORF1a", "ORF1b", "ORF3a", "ORF6", "ORF7a", "ORF7b", "ORF8", "ORF9b", "S"]
-
 # NOTE for shepherds -- there are commented out inputs here, you can
 # uncomment them to start the pipeline at that stage.
 # E.g. if you uncomment `filtered` then the pipeline
