@@ -3,6 +3,10 @@
 As of April 2021, we use major version numbers (e.g. v2) to reflect backward incompatible changes to the workflow that likely require you to update your Nextstrain installation.
 We also use this change log to document new features that maintain backward compatibility, indicating these features by the date they were added.
 
+## New features since last version update
+
+ - Add three configuration parameters to control the metadata sanitizer step of the workflow. These parameters allow users to specify the metadata columns to use for strain names (`metadata_id_columns`) and to resolve duplicate records with database ids (`database_id_columns`). The new `error_on_duplicate_strains` parameter allows users to ask the workflow to exit with an error when any duplicates appear in the metadata. [See the configuration reference for more details](https://docs.nextstrain.org/projects/ncov/en/latest/reference/configuration.html#sanitize-metadata). ([#728](https://github.com/nextstrain/ncov/pull/728))
+
 ## v8 (19 Aug 2021)
 
 ### Major changes
