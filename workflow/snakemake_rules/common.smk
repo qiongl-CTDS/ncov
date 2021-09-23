@@ -152,13 +152,7 @@ def _get_upload_inputs(wildcards):
     origin = config["S3_DST_ORIGINS"][0]
 
     # mapping of remote → local filenames
-    uploads = {
-        f"aligned.fasta.xz":              f"results/aligned_{origin}.fasta.xz",              # from `rule align`
-        f"masked.fasta.xz":               f"results/masked_{origin}.fasta.xz",               # from `rule mask`
-        f"filtered.fasta.xz":             f"results/filtered_{origin}.fasta.xz",             # from `rule filter`
-        f"mutation-summary.tsv.xz":       f"results/mutation_summary_{origin}.tsv.xz",       # from `rule mutation_summary`
-    }
-
+    uploads = {}
     for build_name in config["builds"]:
         uploads.update({
             f"{build_name}/sequences.fasta.xz": f"results/{build_name}/{build_name}_subsampled_sequences.fasta.xz",   # from `rule combine_samples`
@@ -169,5 +163,23 @@ def _get_upload_inputs(wildcards):
             f"{build_name}/{build_name}_tip-frequencies.json":  f"auspice/{config['auspice_json_prefix']}_{build_name}_tip-frequencies.json",
             f"{build_name}/{build_name}_root-sequence.json":    f"auspice/{config['auspice_json_prefix']}_{build_name}_root-sequence.json"
         })
+
+    return uploads
+
+
+def _get_preprocessed_upload_inputs(wildcards):
+    # see note above in _get_upload_inputs
+    if len(config["S3_DST_ORIGINS"]) != 1:
+        raise Exception(f'The "upload" rule requires a single value in S3_DST_ORIGINS (got {config["S3_DST_ORIGINS"]!r}).')
+
+    origin = config["S3_DST_ORIGINS"][0]
+
+    # mapping of remote → local filenames
+    uploads = {
+        f"aligned.fasta.xz":              f"results/aligned_{origin}.fasta.xz",              # from `rule align`
+        f"masked.fasta.xz":               f"results/masked_{origin}.fasta.xz",               # from `rule mask`
+        f"filtered.fasta.xz":             f"results/filtered_{origin}.fasta.xz",             # from `rule filter`
+        f"mutation-summary.tsv.xz":       f"results/mutation_summary_{origin}.tsv.xz",       # from `rule mutation_summary`
+    }
 
     return uploads
