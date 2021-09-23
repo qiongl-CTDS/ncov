@@ -1,0 +1,51 @@
+name: preprocess-gisaid
+
+on:
+  ## This workflow is intended to be run via a repository dispatch event sent from
+  ## https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-gisaid-master.yml
+  repository_dispatch:
+    types:
+      - preprocess-gisaid
+  ## Manual running (via GitHub UI) is also be available, if needed, via workflow dispatch
+  workflow_dispatch:
+
+jobs:
+  gisaid:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup
+      run: ./scripts/setup-github-workflow
+
+    - name: Launch preprocess build
+      run: |
+        set -x
+        nextstrain build \
+          --aws-batch \
+          --cpus 16 \
+          --detach \
+          --memory 14GiB \
+            . \
+            upload \
+            --set-threads align=16 \
+            --profile nextstrain_profiles/nextstrain-gisaid-preprocess \
+        |& tee build-launch.log
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Build info
+      run: |
+        echo "--> Preprocessed files will be uploaded as:"
+        echo "    s3://nextstrain-ncov-private/aligned.fasta.xz"
+        echo "    s3://nextstrain-ncov-private/masked.fasta.xz"
+        echo "    s3://nextstrain-ncov-private/filtered.fasta.xz"
+        echo "    s3://nextstrain-ncov-private/mutation-summary.tsv.xz"
+        echo
+        echo "--> Attach command"
+        tail -n1 build-launch.log
+        echo
+        JOBID=$( tail -n1 build-launch.log | sed -E 's/.+attach ([-a-f0-9]+).+/\1/' )
+        echo "--> View this job in the AWS console via"
+        echo "    https://console.aws.amazon.com/batch/home?region=us-east-1#jobs/detail/${JOBID}"
